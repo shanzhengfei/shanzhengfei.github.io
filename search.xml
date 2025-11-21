@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>Docker搭建自己的信息聚合</title>
+      <link href="/2025/11/21/Docker%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BF%A1%E6%81%AF%E8%81%9A%E5%90%88/"/>
+      <url>/2025/11/21/Docker%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BF%A1%E6%81%AF%E8%81%9A%E5%90%88/</url>
+      
+        <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>糖果梦热榜是一个涵盖新闻、影视、音乐、社交、IT、短视频，实时更新的热门清单，汇集了最新的资讯。只需打开页面，即可轻松浏览各大热门内容，时刻跟进行业动态，掌握最热话题。搭建也是很方便的docker意见启动就行。</p><h2 id="前置准备"><a href="#前置准备" class="headerlink" title="前置准备"></a>前置准备</h2><p>1、这次我使用的还是<a href="https://www.lcayun.com/aff/RKXCDKBH">莱卡云</a>的香港服务器，他们家云服务器性能都不错，线路也很优质、同时也具有一定的防御能力，最主要的还是稳定，有香港 CN2 优化线路、美国 CN2 GIA 等优质线路，国内访问延时低，而且免去了我们备案的麻烦<br><img src="https://pic1.imgdb.cn/item/68e08c38c5157e1a8855599a.webp"><br><img src="https://pic1.imgdb.cn/item/68e08c46c5157e1a885559e2.webp"></p><p>2、首先保证你的服务器安装了宝塔，然后也安装了docker。<br><img src="https://pic1.imgdb.cn/item/68e08c53c5157e1a88555a23.webp"><br><img src="https://pic1.imgdb.cn/item/68e08c5dc5157e1a88555a62.webp"></p><p>3、提前准备一个二级域名，解析到你的服务器。</p><h2 id="开始搭建"><a href="#开始搭建" class="headerlink" title="开始搭建"></a>开始搭建</h2><p>新增一个静态站点，无需数据库和PHP<br><img src="https://pic1.imgdb.cn/item/68e08c69c5157e1a88555a9c.webp"></p><p>删除根目录下的所有多余文件<br><img src="https://pic1.imgdb.cn/item/68e08c73c5157e1a88555acb.webp"></p><p>在网站根目录下打开终端，执行以下命令，分别是创建yaml文件，然后编辑内容</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">touch</span> docker-compose.yml</span><br><span class="line">vi docker-compose.yml</span><br></pre></td></tr></table></figure><p>然后按英文状态下的 i  进入编辑模式, 将下面的内容粘贴进去</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">version: <span class="string">&#x27;3.8&#x27;</span></span><br><span class="line">services:</span><br><span class="line">  <span class="comment"># api，单独使用</span></span><br><span class="line">  tgmeng-api:</span><br><span class="line">    container_name: tgmeng-api</span><br><span class="line">    image: tgmeng/tgmeng-api:latest</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">&quot;8080:4399&quot;</span></span><br><span class="line">    environment:</span><br><span class="line">      - JAVA_OPTS=-Xms512m -Xmx1024m</span><br><span class="line">    restart: unless-stopped</span><br><span class="line"></span><br><span class="line">  <span class="comment"># 前端，单独使用</span></span><br><span class="line">  tgmeng-frontend:</span><br><span class="line">    container_name: tgmeng-frontend</span><br><span class="line">    image: coracoo/tgmeng_frontend:latest</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">&quot;3002:3002&quot;</span></span><br><span class="line">    environment:</span><br><span class="line">      - VUE_APP_API_BASE_URL=http://tgmeng-api:4399</span><br><span class="line">      - TZ=Asia/Shanghai</span><br><span class="line">    restart: unless-stopped</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>然后执行启动命令</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure><p>执行成功后可以</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure><p>查看下容器的运行状态</p><p>使用</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs -f tgmeng-frontend</span><br></pre></td></tr></table></figure><p>进入网站设置，添加容器的反向代理</p><p><img src="https://pic1.imgdb.cn/item/68e08b0ec5157e1a88555598.webp"></p><p>为网站申请免费的SSL证书<br><img src="https://pic1.imgdb.cn/item/68e08c83c5157e1a88555b01.webp"></p><h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p>访问你的域名，就能访问你的专属聚合信息页了，真是上班族每日上班必备摸鱼网站。</p><p><img src="https://pic1.imgdb.cn/item/68e08b99c5157e1a8855571d.webp"></p><blockquote><p>更多NAS和Docker教程欢迎访问：<a href="https://www.flyecho.fun/">渐入佳境</a></p></blockquote>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/2025/11/21/hello-world/"/>
+      <url>/2025/11/21/hello-world/</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
+</search>
