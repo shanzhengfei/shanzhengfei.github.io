@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>vue中回车或其他键盘按键的事件监听 | 云锦</title><meta name="author" content="橙子"><meta name="copyright" content="橙子"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="1.前言很多交互做的好一点的网站，都会有这样的功能，当输入完用户名、密码后，直接敲击回车键就能完成登录了在 Vue 开发里，用户与页面交互举足轻重，键盘输入是常见交互形式。精准监听键盘事件，能提升应用功能与体验，像表单提交时监听回车键，以及在游戏、文本编辑、导航控制等场景对各类按键响应处理，都可让交互更便捷高效。下面，我们深入探究 Vue 中回车及其他常用键盘值的事件监听实现，助力开发者打造更灵活">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue中回车或其他键盘按键的事件监听">
+<meta property="og:url" content="https://shanyunjin.site/2025/11/22/biancheng/vueenter/index.html">
+<meta property="og:site_name" content="云锦">
+<meta property="og:description" content="1.前言很多交互做的好一点的网站，都会有这样的功能，当输入完用户名、密码后，直接敲击回车键就能完成登录了在 Vue 开发里，用户与页面交互举足轻重，键盘输入是常见交互形式。精准监听键盘事件，能提升应用功能与体验，像表单提交时监听回车键，以及在游戏、文本编辑、导航控制等场景对各类按键响应处理，都可让交互更便捷高效。下面，我们深入探究 Vue 中回车及其他常用键盘值的事件监听实现，助力开发者打造更灵活">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp">
+<meta property="article:published_time" content="2025-11-22T08:16:30.773Z">
+<meta property="article:modified_time" content="2025-11-22T08:32:00.515Z">
+<meta property="article:author" content="橙子">
+<meta property="article:tag" content="vue,前端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "vue中回车或其他键盘按键的事件监听",
+  "url": "https://shanyunjin.site/2025/11/22/biancheng/vueenter/",
+  "image": "https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp",
+  "datePublished": "2025-11-22T08:16:30.773Z",
+  "dateModified": "2025-11-22T08:32:00.515Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "橙子",
+      "url": "https://shanyunjin.site"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/logo.png"><link rel="canonical" href="https://shanyunjin.site/2025/11/22/biancheng/vueenter/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'vue中回车或其他键盘按键的事件监听',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-external-link-square"></i><span> 分享</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.png" alt="Logo"><span class="site-name">云锦</span></a><a class="nav-page-title" href="/"><span class="site-name">vue中回车或其他键盘按键的事件监听</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-external-link-square"></i><span> 分享</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">vue中回车或其他键盘按键的事件监听</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-22T08:16:30.773Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-22T08:32:00.515Z" title="更新于 2025-11-22 16:32:00">2025-11-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF/">编程技术</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><p>很多交互做的好一点的网站，都会有这样的功能，当输入完用户名、密码后，直接敲击回车键就能完成登录了<br>在 Vue 开发里，用户与页面交互举足轻重，键盘输入是常见交互形式。精准监听键盘事件，能提升应用功能与体验，像表单提交时监听回车键，以及在游戏、文本编辑、导航控制等场景对各类按键响应处理，都可让交互更便捷高效。下面，我们深入探究 Vue 中回车及其他常用键盘值的事件监听实现，助力开发者打造更灵活、交互性强的 Vue 应用。</p>
+<h2 id="2-代码实现"><a href="#2-代码实现" class="headerlink" title="2. 代码实现"></a>2. 代码实现</h2><p>在你需要添加监听的组件脚本中添加代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;script setup&gt;</span><br><span class="line">// 省略...</span><br><span class="line">import &#123; ref, reactive, onMounted, onBeforeUnmount &#125; from &#x27;vue&#x27;</span><br><span class="line"></span><br><span class="line">// 省略...</span><br><span class="line"></span><br><span class="line">// 按回车键后，执行登录事件</span><br><span class="line">function onKeyUp(e) &#123;</span><br><span class="line">    console.log(e)</span><br><span class="line">    if (e.key == &#x27;Enter&#x27;) &#123;</span><br><span class="line">        onSubmit()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 添加键盘监听</span><br><span class="line">onMounted(() =&gt; &#123;</span><br><span class="line">    console.log(&#x27;添加键盘监听&#x27;)</span><br><span class="line">    document.addEventListener(&#x27;keyup&#x27;, onKeyUp)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 移除键盘监听</span><br><span class="line">onBeforeUnmount(() =&gt; &#123;</span><br><span class="line">    document.removeEventListener(&#x27;keyup&#x27;, onKeyUp)</span><br><span class="line">&#125;)</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>首先，我们引入了 onMounted 、onBeforeUnmount 生命周期方法，然后在 onMounted() 方法中添加了键盘监听事件，当键盘的 key 值为 Enter 时，也就是回车键时，直接调用 onSubmit() 登录。然后在 onBeforeUnmount() 生命周期方法中，移除了键盘监听事件。</p>
+<h2 id="3-其他一些键盘按键"><a href="#3-其他一些键盘按键" class="headerlink" title="3. 其他一些键盘按键"></a>3. 其他一些键盘按键</h2><h3 id="3-1-监听方向键（上、下、左、右）"><a href="#3-1-监听方向键（上、下、左、右）" class="headerlink" title="3.1 监听方向键（上、下、左、右）"></a>3.1 监听方向键（上、下、左、右）</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">key</span> === <span class="string">&#x27;ArrowUp&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 在这里执行向上箭头键被按下时的操作，比如改变列表选中项的索引</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;向上箭头键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于向下箭头键（ArrowDown）、向左箭头键（ArrowLeft）和向右箭头键（ArrowRight），只需将e.key的值分别修改为ArrowDown、ArrowLeft和ArrowRight即可。</p>
+<h3 id="3-2-监听功能键（如-Ctrl、Shift、Alt）"><a href="#3-2-监听功能键（如-Ctrl、Shift、Alt）" class="headerlink" title="3.2 监听功能键（如 Ctrl、Shift、Alt）"></a>3.2 监听功能键（如 Ctrl、Shift、Alt）</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">ctrlKey</span>) &#123;</span><br><span class="line">        <span class="comment">// 这里可以执行当Ctrl键被按下时的操作，比如配合其他键实现复制、粘贴等功能的快捷键操作</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Ctrl键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于Shift键，可以通过e.shiftKey来判断，对于Alt键，可以通过e.altKey来判断。如果要同时监听多个功能键和其他按键的组合，比如Ctrl + Enter，可以这样写：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">ctrlKey</span> &amp;&amp; e.<span class="property">key</span> === <span class="string">&#x27;Enter&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 执行Ctrl + Enter组合键被按下时的操作</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Ctrl + Enter组合键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-监听字母和数字键"><a href="#3-3-监听字母和数字键" class="headerlink" title="3.3 监听字母和数字键"></a>3.3 监听字母和数字键</h3><p>监听字母键和数字键与监听回车键类似。例如，要监听字母a键：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">key</span> === <span class="string">&#x27;a&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 在这里执行字母a键被按下时的操作，比如在输入框中添加字符a</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;字母a键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于数字键，比如1键，将e.key的值设置为1即可。同样的方法适用于所有的字母（区分大小写）和数字键。</p>
+<h3 id="3-4-监听退格键（Backspace）和删除键（Delete）"><a href="#3-4-监听退格键（Backspace）和删除键（Delete）" class="headerlink" title="3.4 监听退格键（Backspace）和删除键（Delete）"></a>3.4 监听退格键（Backspace）和删除键（Delete）</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">key</span> === <span class="string">&#x27;Backspace&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 在这里执行退格键被按下时的操作，比如在输入框中删除前一个字符</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;退格键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">key</span> === <span class="string">&#x27;Delete&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 在这里执行删除键被按下时的操作，比如在输入框中删除选中的内容</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;删除键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-5-监听-Page-Up-和-Page-Down-键"><a href="#3-5-监听-Page-Up-和-Page-Down-键" class="headerlink" title="3.5 监听 Page Up 和 Page Down 键"></a>3.5 监听 Page Up 和 Page Down 键</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">key</span> === <span class="string">&#x27;PageUp&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 在这里执行Page Up键被按下时的操作，比如在分页列表中向上翻页</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Page Up键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">onKeyUp</span>(<span class="params">e</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    <span class="keyword">if</span> (e.<span class="property">key</span> === <span class="string">&#x27;PageDown&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 在这里执行Page Down键被按下时的操作，比如在分页列表中向下翻页</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Page Down键被按下&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://shanyunjin.site">橙子</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://shanyunjin.site/2025/11/22/biancheng/vueenter/">https://shanyunjin.site/2025/11/22/biancheng/vueenter/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://shanyunjin.site" target="_blank">云锦</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/vue-%E5%89%8D%E7%AB%AF/">vue,前端</a></div><div class="post-share"><div class="social-share" data-image="https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/22/biancheng/animatecss/" title="简单易用的css动画库 Animate.css"><img class="cover" src="https://pic1.imgdb.cn/item/6709eea4d29ded1a8c619976.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">简单易用的css动画库 Animate.css</div></div><div class="info-2"><div class="info-item-1">1. Animate.css 是什么？Animate.css 是一个跨浏览器的 CSS 动画库，提供了许多预设的、流畅的动画效果。用户只需添加几个 CSS 类名，就可以轻松实现复杂的动画效果，无需编写任何 JavaScript 代码。 2. 为什么使用 Animate.css？ 简单易用：通过添加或删除类名，你可以触发动画，这使得实现动画效果变得非常直观。 高性能和跨浏览器：Animate.css 专为性能进行了优化，并在多数现代浏览器中表现良好。 丰富的动画选择：无需从零开始设计动画，库中提供了大量预制动画，如“fadeIn”、“bounce”、“zoomIn”等。 与 Vue 配合完美：Vue 提供了 transition 组件，可以与 Animate.css 轻松结合，为你的 Vue 应用添加精美动画。  3.开始动手3.1 安装打开命令行，执行如下安装命令： npm install animate.css --save 3.2 引入在 main.js 文件中引入它： import &#x27;animate.css&#x27;; 引入后，就可以添加相关动画效果了。 3.3...</div></div></div></a><a class="pagination-related" href="/2025/11/22/biancheng/vueglobalrouter/" title="vue中的请求拦截、响应拦截和全局路由拦截"><img class="cover" src="https://pic1.imgdb.cn/item/6709eeb0d29ded1a8c61a280.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">vue中的请求拦截、响应拦截和全局路由拦截</div></div><div class="info-2"><div class="info-item-1">1. 前言本篇将为 axios 请求库添加请求拦截器、响应拦截器，通过它们，就可以在请求之前，或者请求结束以后定制一些个性化需求。 2. 拦截器关于拦截器的详细文档，可访问官方地址：https://www.axios-http.cn/docs/interceptors ，官方对它的解释是：  在请求或响应被 then 或 catch 处理前拦截它们。  // 添加请求拦截器axios.interceptors.request.use(function (config) &#123;    // 在发送请求之前做些什么    return config;  &#125;, function (error) &#123;    // 对请求错误做些什么    return Promise.reject(error);  &#125;);// 添加响应拦截器axios.interceptors.response.use(function (response) &#123;    // 2xx 范围内的状态码都会触发该函数。    // 对响应数据做点什么    return respo...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/11/22/biancheng/vue3h5erweima/" title="vue3开发h5页面实现扫描二维码功能"><img class="cover" src="https://pic1.imgdb.cn/item/6709ee93d29ded1a8c618ddd.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-22</div><div class="info-item-2">vue3开发h5页面实现扫描二维码功能</div></div><div class="info-2"><div class="info-item-1">安装依赖html5-qrcode 是一个用于在现代浏览器中进行二维码扫描的 JavaScript 库。它利用 HTML5 的 getUserMedia API 来访问设备的摄像头，并使用 QRCode 库来解码二维码。这个库非常适合在 Web 应用中实现二维码扫描功能，尤其是在移动设备上。 npm install html5-qrcode  实例组件&lt;template&gt;  &lt;div&gt;    &lt;button @click=&quot;startScan&quot;&gt;扫码&lt;/button&gt;    &lt;p v-if=&quot;qrCodeContent&quot; style=&quot;display: inline-block; margin-left: 10px;&quot;&gt;&#123;&#123; qrCodeContent &#125;&#125;&lt;/p&gt;    &lt;div id=&quot;reader&quot; style=&quot;width: 100%;&quot;&gt;&lt;/di...</div></div></div></a><a class="pagination-related" href="/2025/11/22/biancheng/vue3router/" title="vue3 路由的引入和配置"><img class="cover" src="https://pic1.imgdb.cn/item/6709ee48d29ded1a8c615386.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-22</div><div class="info-item-2">vue3 路由的引入和配置</div></div><div class="info-2"><div class="info-item-1">在 Vue 中，router 是一个核心插件，负责管理应用的路由配置，实现单页面应用（SPA）中的页面导航和组件切换，使得开发者能够通过定义路由映射来动态加载和渲染不同的组件，从而构建复杂的用户界面和交互体验。官方网站https://router.vuejs.org/ router的安装npm install vue-router@4 具体的版本会在package.json里体现 路由定义与导出 index.js: import Main from &#x27;../view/Main.vue&#x27;import Login from &#x27;../view/login/login.vue&#x27;import &#123; createWebHashHistory, createRouter &#125; from &#x27;vue-router&#x27;const routes = [    &#123; path: &#x27;/&#x27;, component: Main &#125;,    &#123; path: &#x27;/login&#x27;...</div></div></div></a><a class="pagination-related" href="/2025/11/22/biancheng/vueKeepAlive/" title="Vue 中 KeepAlive 的用法全解析"><img class="cover" src="https://pic1.imgdb.cn/item/6709eeb0d29ded1a8c61a280.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-22</div><div class="info-item-2">Vue 中 KeepAlive 的用法全解析</div></div><div class="info-2"><div class="info-item-1">1. 前言在 Vue 开发过程中，我们常常会碰到组件频繁切换的情况。大家都知道，组件每一次切换时的创建与销毁，其实都在消耗着系统资源，这可能会对应用的性能产生影响，甚至让用户体验大打折扣。而 Vue 为我们提供的 KeepAlive 组件，就像是一把优化性能的利器。它能够将那些需要频繁切换的组件实例缓存起来，当再次用到这些组件时，直接从缓存中调取，而不是重新创建，从而显著提升应用的运行效率与响应速度。无论是小型项目还是大型复杂应用，了解并掌握 KeepAlive 的用法，都能帮助我们更好地优化 Vue 应用，让我们的开发工作更加得心应手。接下来，咱们就深入地了解一下它的具体用法。 2. KeepAlive 基本概念与用法KeepAlive 是 Vue 内置的一个组件，其核心作用就是缓存组件实例。在一般的 Vue 应用场景里，比如通过 v - if 或者 v - show 指令切换组件，又或者是在路由切换时的 &lt;router - view&gt; 部分，组件默认是会被销毁然后重新创建的。但 KeepAlive 改变了这种模式。假设我们有 ComponentA 和 Compon...</div></div></div></a><a class="pagination-related" href="/2025/11/22/biancheng/vueglobalrouter/" title="vue中的请求拦截、响应拦截和全局路由拦截"><img class="cover" src="https://pic1.imgdb.cn/item/6709eeb0d29ded1a8c61a280.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-22</div><div class="info-item-2">vue中的请求拦截、响应拦截和全局路由拦截</div></div><div class="info-2"><div class="info-item-1">1. 前言本篇将为 axios 请求库添加请求拦截器、响应拦截器，通过它们，就可以在请求之前，或者请求结束以后定制一些个性化需求。 2. 拦截器关于拦截器的详细文档，可访问官方地址：https://www.axios-http.cn/docs/interceptors ，官方对它的解释是：  在请求或响应被 then 或 catch 处理前拦截它们。  // 添加请求拦截器axios.interceptors.request.use(function (config) &#123;    // 在发送请求之前做些什么    return config;  &#125;, function (error) &#123;    // 对请求错误做些什么    return Promise.reject(error);  &#125;);// 添加响应拦截器axios.interceptors.response.use(function (response) &#123;    // 2xx 范围内的状态码都会触发该函数。    // 对响应数据做点什么    return respo...</div></div></div></a><a class="pagination-related" href="/2023/11/23/biancheng/vuex/" title="用vuex实现vue中的内容存储和组件数据共享"><img class="cover" src="https://pic1.imgdb.cn/item/6709eeb0d29ded1a8c61a280.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-23</div><div class="info-item-2">用vuex实现vue中的内容存储和组件数据共享</div></div><div class="info-2"><div class="info-item-1">介绍与安装介绍Vuex 是 vue 项目中实现大范围数据共享的技术方案。作用：能够方便、高效地实现组件之间的数据共享。传统的父子组件数据传递较复杂，vuex可以更方便的实现多个交互组件之前的数据共享 安装npm install vuex@next --save  使用步骤定义我们在src目录下新建store文件夹，创建index.js，和自己的模块js menu.js，这个例子中是为了实现左侧的导航菜单点击可在右侧头部展示当前菜单的tab页index.js import &#123; createStore &#125; from &quot;vuex&quot;;import menu from &#x27;./menu&#x27;export default createStore(&#123;  modules: &#123;    menu  &#125;&#125;)  这是为了创建store对象，方便外部使用需要去存储的变量，模块则是方便管理不同的变量类型 menu.js const state = &#123;  isCollapse: false,  select...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">橙子</div><div class="author-info-description">总有人间一两风，填我十万八千梦</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shanzhengfei"><i class="fab fa-github"></i><span>关注我</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">如人饮水，冷暖自知</div></div><div class="card-widget vps" id="vps"><div class="item-headline"><i class="fas fa-heartbeat"></i><span>VPS推荐</span></div><div class="item-content"><div class="textwidget custom-html-widget">
+  <div class="zib-widget">
+    <style>
+       .themeinfo {
+            overflow: hidden;
+        }
+
+       .themeinfo img {
+            display: block;
+            height: auto;
+            width: 100%;
+            border-radius: 3px 3px 0 0;
+            background-size: cover;
+            cursor: pointer; /* 添加鼠标指针样式为手型，表示可点击 */
+        }
+
+       .theme-info h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            padding: 5px 0 10px 0;
+        }
+
+       .theme-info ul {
+            margin-left: 10px;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+       .theme-info ul li {
+            font-size: 13px;
+            margin-bottom: 8px;
+            list-style: none;
+        }
+
+       .theme-info ul li i {
+            margin-right: 5px;
+        }
+
+       .themeinfo-content.sale {
+            margin: 0;
+            border-top: 1px solid #eee;
+            padding: 10px 5px;
+            margin: 0 15px;
+        }
+
+       .themeinfo-content.sale h2 {
+            margin: 0;
+            font-size: 14px;
+            color: #999;
+            line-height: 20px;
+        }
+
+       .themeinfo-content.sale small {
+            font-style: normal;
+            font-size: 12px;
+            position: relative;
+            margin-right: 4px;
+        }
+
+       .themeinfo-content.sale strong {
+            float: right;
+            line-height: 1;
+            font-weight: 200;
+        }
+
+       .themeinfo-content a {
+            color: #fff;
+            border-image: linear-gradient(rgb(0 6 143), rgb(242 66 250)) 1;
+            background-image: linear-gradient(135deg, #fd7a64 10%, #fb2d2d 100%);
+            border-radius: 5px;
+            display: block;
+            padding: 10px;
+            margin: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+       .themeinfo-content a:hover {
+            opacity: 0.8;
+        }
+    </style>
+    <div class="widget-content themeinfo">
+      <img
+        title="莱卡云"
+        src="https://pic.imgdb.cn/item/67484920d0e0a243d4da2186.webp"
+        onclick="window.location.href='https://www.lcayun.com/aff/RKXCDKBH'"
+      />
+      <div class="themeinfo-content">
+        <div class="theme-info">
+          <h2>本站同款服务器供应商</h2>
+        </div>
+        <a href="https://www.lcayun.com/aff/RKXCDKBH" target="_blank" rel="noopener">立即购买</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">1.前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">2. 代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%85%B6%E4%BB%96%E4%B8%80%E4%BA%9B%E9%94%AE%E7%9B%98%E6%8C%89%E9%94%AE"><span class="toc-number">3.</span> <span class="toc-text">3. 其他一些键盘按键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%9B%91%E5%90%AC%E6%96%B9%E5%90%91%E9%94%AE%EF%BC%88%E4%B8%8A%E3%80%81%E4%B8%8B%E3%80%81%E5%B7%A6%E3%80%81%E5%8F%B3%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 监听方向键（上、下、左、右）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%9B%91%E5%90%AC%E5%8A%9F%E8%83%BD%E9%94%AE%EF%BC%88%E5%A6%82-Ctrl%E3%80%81Shift%E3%80%81Alt%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 监听功能键（如 Ctrl、Shift、Alt）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E7%9B%91%E5%90%AC%E5%AD%97%E6%AF%8D%E5%92%8C%E6%95%B0%E5%AD%97%E9%94%AE"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 监听字母和数字键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E7%9B%91%E5%90%AC%E9%80%80%E6%A0%BC%E9%94%AE%EF%BC%88Backspace%EF%BC%89%E5%92%8C%E5%88%A0%E9%99%A4%E9%94%AE%EF%BC%88Delete%EF%BC%89"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 监听退格键（Backspace）和删除键（Delete）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E7%9B%91%E5%90%AC-Page-Up-%E5%92%8C-Page-Down-%E9%94%AE"><span class="toc-number">3.5.</span> <span class="toc-text">3.5 监听 Page Up 和 Page Down 键</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/btspringboot/" title="用宝塔轻松部署java springboot的前后端分离项目"><img src="https://pic1.imgdb.cn/item/6709edcdd29ded1a8c60f520.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用宝塔轻松部署java springboot的前后端分离项目"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/btspringboot/" title="用宝塔轻松部署java springboot的前后端分离项目">用宝塔轻松部署java springboot的前后端分离项目</a><time datetime="2025-11-22T08:16:30.834Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/chatgptcanvas/" title="用chatgpt为网站首页绘制一个canvas星空特效"><img src="https://pic1.imgdb.cn/item/6709eea7d29ded1a8c619ba7.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用chatgpt为网站首页绘制一个canvas星空特效"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/chatgptcanvas/" title="用chatgpt为网站首页绘制一个canvas星空特效">用chatgpt为网站首页绘制一个canvas星空特效</a><time datetime="2025-11-22T08:16:30.810Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/tailwindxiaomi/" title="使用 Tailwind CSS 引入小米字体 告别原生自带丑字体"><img src="https://pic1.imgdb.cn/item/6709ee46d29ded1a8c615205.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 Tailwind CSS 引入小米字体 告别原生自带丑字体"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/tailwindxiaomi/" title="使用 Tailwind CSS 引入小米字体 告别原生自带丑字体">使用 Tailwind CSS 引入小米字体 告别原生自带丑字体</a><time datetime="2025-11-22T08:16:30.802Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/animatecss/" title="简单易用的css动画库 Animate.css"><img src="https://pic1.imgdb.cn/item/6709eea4d29ded1a8c619976.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="简单易用的css动画库 Animate.css"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/animatecss/" title="简单易用的css动画库 Animate.css">简单易用的css动画库 Animate.css</a><time datetime="2025-11-22T08:16:30.787Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/vueenter/" title="vue中回车或其他键盘按键的事件监听"><img src="https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="vue中回车或其他键盘按键的事件监听"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/vueenter/" title="vue中回车或其他键盘按键的事件监听">vue中回车或其他键盘按键的事件监听</a><time datetime="2025-11-22T08:16:30.773Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By 橙子</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3-b1"></script><script src="/js/main.js?v=5.5.3-b1"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liydZ9xfc09IfFkl',
+      clientSecret: 'aa33e40d37fc33e5d2775e3cf68d93b262cbaa69',
+      repo: 'shanzhengfei.github.io',
+      owner: 'shanzhengfei',
+      admin: ['shanzhengfei'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'feddc4d7b29ef2adcf6bb1f8f64deb2b'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-nest.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3-b1"></script></div></div></body></html>

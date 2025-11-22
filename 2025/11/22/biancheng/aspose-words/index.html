@@ -1,0 +1,335 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>JAVA  使用aspose-words 实现 word转pdf | 云锦</title><meta name="author" content="橙子"><meta name="copyright" content="橙子"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="2023.12.5 更新项目运行中发现，引入了org.apache.poi太多的包，导致内部有依赖冲突且很不好排查，修改后直接使用aspose-words的包就能实现word转换pdf更新后的pom依赖  &lt;dependency&gt;    &lt;groupId&gt;com.luhuiguo&lt;&#x2F;groupId&gt;    &lt;artifactId&gt;aspose-wo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA  使用aspose-words 实现 word转pdf">
+<meta property="og:url" content="https://shanyunjin.site/2025/11/22/biancheng/aspose-words/index.html">
+<meta property="og:site_name" content="云锦">
+<meta property="og:description" content="2023.12.5 更新项目运行中发现，引入了org.apache.poi太多的包，导致内部有依赖冲突且很不好排查，修改后直接使用aspose-words的包就能实现word转换pdf更新后的pom依赖  &lt;dependency&gt;    &lt;groupId&gt;com.luhuiguo&lt;&#x2F;groupId&gt;    &lt;artifactId&gt;aspose-wo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.imgdb.cn/item/6709ee48d29ded1a8c615386.webp">
+<meta property="article:published_time" content="2025-11-22T08:16:30.514Z">
+<meta property="article:modified_time" content="2025-11-22T08:23:15.562Z">
+<meta property="article:author" content="橙子">
+<meta property="article:tag" content="java,后端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.imgdb.cn/item/6709ee48d29ded1a8c615386.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "JAVA  使用aspose-words 实现 word转pdf",
+  "url": "https://shanyunjin.site/2025/11/22/biancheng/aspose-words/",
+  "image": "https://pic1.imgdb.cn/item/6709ee48d29ded1a8c615386.webp",
+  "datePublished": "2025-11-22T08:16:30.514Z",
+  "dateModified": "2025-11-22T08:23:15.562Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "橙子",
+      "url": "https://shanyunjin.site"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/logo.png"><link rel="canonical" href="https://shanyunjin.site/2025/11/22/biancheng/aspose-words/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'JAVA  使用aspose-words 实现 word转pdf',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-external-link-square"></i><span> 分享</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://pic1.imgdb.cn/item/6709ee48d29ded1a8c615386.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.png" alt="Logo"><span class="site-name">云锦</span></a><a class="nav-page-title" href="/"><span class="site-name">JAVA  使用aspose-words 实现 word转pdf</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-external-link-square"></i><span> 分享</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">JAVA  使用aspose-words 实现 word转pdf</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-22T08:16:30.514Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-22T08:23:15.562Z" title="更新于 2025-11-22 16:23:15">2025-11-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF/">编程技术</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>2023.12.5 更新<br>项目运行中发现，引入了org.apache.poi太多的包，导致内部有依赖冲突且很不好排查，修改后直接使用aspose-words的包就能实现word转换pdf<br>更新后的pom依赖</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.luhuiguo<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>aspose-words<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>23.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cn.hutool<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hutool-all<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.7.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>核心代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> com.aspose.words.Document;</span><br><span class="line"><span class="keyword">import</span> com.aspose.words.License;</span><br><span class="line"><span class="keyword">import</span> com.aspose.words.SaveFormat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WordToPdf</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> File <span class="title function_">docToPdf</span><span class="params">(String docPath, String pdfPath)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;WORD转化PDF开始&gt;&gt;&gt;&gt;&quot;</span>);  <span class="comment">//转化用时</span></span><br><span class="line">        <span class="type">File</span> <span class="variable">pdfFile</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(pdfPath);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">old</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">            <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;&lt;License&gt;&lt;Data&gt;&lt;Products&gt;&lt;Product&gt;Aspose.Total for Java&lt;/Product&gt;&lt;Product&gt;Aspose.Words for Java&lt;/Product&gt;&lt;/Products&gt;&lt;EditionType&gt;Enterprise&lt;/EditionType&gt;&lt;SubscriptionExpiry&gt;20991231&lt;/SubscriptionExpiry&gt;&lt;LicenseExpiry&gt;20991231&lt;/LicenseExpiry&gt;&lt;SerialNumber&gt;8bfe198c-7f0c-4ef8-8ff0-acc3237bf0d7&lt;/SerialNumber&gt;&lt;/Data&gt;&lt;Signature&gt;sNLLKGMUdF0r8O1kKilWAGdgfs2BvJb/2Xp8p5iuDVfZXmhppo+d0Ran1P9TKdjV4ABwAgKXxJ3jcQTqE/2IRfqwnPf8itN8aFZlV3TJPYeD3yWE7IT55Gz6EijUpC7aKeoohTb4w2fpox58wWoF3SNp6sK6jDfiAUGEHYJ9pjU=&lt;/Signature&gt;&lt;/License&gt;&quot;</span>;</span><br><span class="line">            <span class="type">ByteArrayInputStream</span> <span class="variable">is</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(s.getBytes());</span><br><span class="line">            <span class="type">License</span> <span class="variable">license</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">License</span>();</span><br><span class="line">            license.setLicense(is);</span><br><span class="line">            <span class="type">Document</span> <span class="variable">document</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Document</span>(docPath);</span><br><span class="line">            <span class="type">FileOutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(pdfFile);</span><br><span class="line">            document.save(outputStream, SaveFormat.PDF);</span><br><span class="line">            <span class="type">long</span> <span class="variable">now</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">            outputStream.close();</span><br><span class="line">            is.close();</span><br><span class="line">            System.out.println(<span class="string">&quot;WORD转化PDF共耗时：&quot;</span> + ((now - old) / <span class="number">1000.0</span>) + <span class="string">&quot;秒&quot;</span>);  <span class="comment">//转化用时</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;转化失败&quot;</span>);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pdfFile;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> File <span class="title function_">docToPdf</span><span class="params">(InputStream docPathInputStream, String pdfPath)</span> &#123;</span><br><span class="line">        <span class="type">File</span> <span class="variable">pdfFile</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(pdfPath);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">old</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">            <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;&lt;License&gt;&lt;Data&gt;&lt;Products&gt;&lt;Product&gt;Aspose.Total for Java&lt;/Product&gt;&lt;Product&gt;Aspose.Words for Java&lt;/Product&gt;&lt;/Products&gt;&lt;EditionType&gt;Enterprise&lt;/EditionType&gt;&lt;SubscriptionExpiry&gt;20991231&lt;/SubscriptionExpiry&gt;&lt;LicenseExpiry&gt;20991231&lt;/LicenseExpiry&gt;&lt;SerialNumber&gt;8bfe198c-7f0c-4ef8-8ff0-acc3237bf0d7&lt;/SerialNumber&gt;&lt;/Data&gt;&lt;Signature&gt;sNLLKGMUdF0r8O1kKilWAGdgfs2BvJb/2Xp8p5iuDVfZXmhppo+d0Ran1P9TKdjV4ABwAgKXxJ3jcQTqE/2IRfqwnPf8itN8aFZlV3TJPYeD3yWE7IT55Gz6EijUpC7aKeoohTb4w2fpox58wWoF3SNp6sK6jDfiAUGEHYJ9pjU=&lt;/Signature&gt;&lt;/License&gt;&quot;</span>;</span><br><span class="line">            <span class="type">ByteArrayInputStream</span> <span class="variable">is</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(s.getBytes());</span><br><span class="line">            <span class="type">License</span> <span class="variable">license</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">License</span>();</span><br><span class="line">            license.setLicense(is);</span><br><span class="line">            <span class="type">Document</span> <span class="variable">document</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Document</span>(docPathInputStream);</span><br><span class="line">            <span class="type">FileOutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(pdfFile);</span><br><span class="line">            document.save(outputStream, SaveFormat.PDF);</span><br><span class="line">            <span class="type">long</span> <span class="variable">now</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">            outputStream.close();</span><br><span class="line">            is.close();</span><br><span class="line">            System.out.println(<span class="string">&quot;WORD转化PDF共耗时：&quot;</span> + ((now - old) / <span class="number">1000.0</span>) + <span class="string">&quot;秒&quot;</span>);  <span class="comment">//转化用时</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;转化失败&quot;</span>);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> pdfFile;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">docPath</span> <span class="operator">=</span> <span class="string">&quot;F:\\Users\\test\\Desktop\\test.docx&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">pdfPath</span> <span class="operator">=</span> <span class="string">&quot;F:\\Users\\test\\Desktop\\test-convert.pdf&quot;</span>;</span><br><span class="line">        docToPdf(docPath,pdfPath);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之前的版本</p>
+<blockquote>
+<p>最近做的一个项目中需要对接上上签实现自动签章和骑缝章的功能，但是用户这边的合同有docx也有pdf，而上上签只能对接pdf的格式，于是找了很多方法，不是表格转换有问题，就是图片转换有问题，要么就是格式上有点失真，最后找到一个比较完美的方案，记录一下，后台是springboot，文件涉及到公司机密就没有效果展示了。</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.luhuiguo<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>aspose-words<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>23.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--  poi --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.poi<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>poi<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.poi<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>poi-ooxml<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.poi<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>poi-scratchpad<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.poi<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>poi-excelant<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- itextpdf --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.itextpdf<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>itextpdf<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.5.13.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.itextpdf<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>itext-asian<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cn.hutool<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hutool-all<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.7.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>核心代码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cn.hutool.core.util.StrUtil;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fhey</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2023-04-20 11:15:58</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: 文件工具类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FileUtil</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(FileUtil.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取新文件的全路径</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">getNewFileFullPath</span><span class="params">(String sourceFilePath, String destFilePath, String ext)</span> &#123;</span><br><span class="line">        <span class="type">File</span> <span class="variable">destFile</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(destFilePath);</span><br><span class="line">        <span class="keyword">if</span> (destFile.isFile()) &#123;</span><br><span class="line">            <span class="keyword">return</span> destFilePath;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">File</span> <span class="variable">sourceFile</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(sourceFilePath);</span><br><span class="line">        <span class="type">String</span> <span class="variable">sourceFileName</span> <span class="operator">=</span> sourceFile.getName();</span><br><span class="line">        <span class="keyword">if</span> (sourceFile.isFile()) &#123;</span><br><span class="line">            <span class="keyword">return</span> destFilePath + File.separator + sourceFileName.substring(<span class="number">0</span>, sourceFileName.lastIndexOf(StrUtil.DOT)) + StrUtil.DOT + ext;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> destFilePath + File.separator + sourceFileName + StrUtil.DOT + ext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//判断文件是否是图片</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">isImage</span><span class="params">(File file)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">is</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(file);</span><br><span class="line">        <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">8</span>];</span><br><span class="line">        is.read(bytes);</span><br><span class="line">        is.close();</span><br><span class="line">        <span class="type">String</span> <span class="variable">type</span> <span class="operator">=</span> bytesToHexString(bytes).toUpperCase();</span><br><span class="line">        <span class="keyword">if</span> (type.contains(<span class="string">&quot;FFD8FF&quot;</span>) <span class="comment">//JPEG(jpg)</span></span><br><span class="line">                || type.contains(<span class="string">&quot;89504E47&quot;</span>) <span class="comment">//PNG</span></span><br><span class="line">                || type.contains(<span class="string">&quot;47494638&quot;</span>) <span class="comment">//GIF</span></span><br><span class="line">                || type.contains(<span class="string">&quot;49492A00&quot;</span>) <span class="comment">//TIFF(tif)</span></span><br><span class="line">                || type.contains(<span class="string">&quot;424D&quot;</span>) <span class="comment">//Bitmap(bmp)</span></span><br><span class="line">        ) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将文件头转换成16进制字符串</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">bytesToHexString</span><span class="params">(<span class="type">byte</span>[] src)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">builder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>();</span><br><span class="line">        <span class="keyword">if</span> (src == <span class="literal">null</span> || src.length &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; src.length; i++) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">v</span> <span class="operator">=</span> src[i] &amp; <span class="number">0xFF</span>;</span><br><span class="line">            <span class="type">String</span> <span class="variable">hv</span> <span class="operator">=</span> Integer.toHexString(v);</span><br><span class="line">            <span class="keyword">if</span> (hv.length() &lt; <span class="number">2</span>) &#123;</span><br><span class="line">                builder.append(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            builder.append(hv);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> builder.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用示例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">wordToPdf</span><span class="params">(String wordPath, String pdfPath)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        pdfPath = FileUtil.getNewFileFullPath(wordPath, pdfPath, <span class="string">&quot;pdf&quot;</span>);</span><br><span class="line">        <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(pdfPath);</span><br><span class="line">        <span class="type">FileOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(file);</span><br><span class="line">        <span class="type">Document</span> <span class="variable">doc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Document</span>(wordPath);</span><br><span class="line">        doc.save(os, com.aspose.words.SaveFormat.PDF);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">filepath</span> <span class="operator">=</span> <span class="string">&quot;test.docx&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">outpath</span> <span class="operator">=</span> <span class="string">&quot;/tmp&quot;</span>;</span><br><span class="line">        wordToPdf(filepath, outpath);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://shanyunjin.site">橙子</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://shanyunjin.site/2025/11/22/biancheng/aspose-words/">https://shanyunjin.site/2025/11/22/biancheng/aspose-words/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://shanyunjin.site" target="_blank">云锦</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java-%E5%90%8E%E7%AB%AF/">java,后端</a></div><div class="post-share"><div class="social-share" data-image="https://pic1.imgdb.cn/item/6709ee48d29ded1a8c615386.webp" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/22/biancheng/linuxmysql/" title="linux内网离线安装Mysql 8.2.0"><img class="cover" src="https://pic1.imgdb.cn/item/6709ee93d29ded1a8c618ddd.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">linux内网离线安装Mysql 8.2.0</div></div><div class="info-2"><div class="info-item-1">1.下载对应的版本地址：https://downloads.mysql.com/archives/community/ 2.开始安装2.1上传包我这里将包上传到了&#x2F;opt&#x2F;software目录下 2.2解压重命名tar -xvf mysql-8.2.0-linux-glibc2.17-x86_64.tar.xzmv mysql-8.2.0-linux-glibc2.17-x86_64/ mysql 2.3创建目录datacd /opt/software/mysqlmkdir data 2.4修改用户组和权限groupadd mysqluseradd -g mysql mysqlchown -R mysql.mysql /opt/software/mysql/ 2.5初始化数据库bin/mysqld --initialize --user=mysql --basedir=/opt/software/mysql --datadir=/opt/software/mysql/data  --lower-case-table-names=1 初始化结束后记住 root@...</div></div></div></a><a class="pagination-related" href="/2025/11/22/biancheng/css+svg/" title="css+svg 制作一个波纹动态特效"><img class="cover" src="https://pic1.imgdb.cn/item/6709eea7d29ded1a8c619ba7.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">css+svg 制作一个波纹动态特效</div></div><div class="info-2"><div class="info-item-1">1.效果展示一般都加载页面底部或者banner图的底部，增加页面的视觉效果，非常好看 2.代码实现html部分&lt;div class=&quot;wave absolute inset-0 flex items-end justify-center&quot;&gt;  &lt;svg class=&quot;waves&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;    viewBox=&quot;0 24 150 28&quot; preserveAspectRatio=&quot;none&quot; shape-rendering=&quot;auto&quot;&gt;    &lt;defs&gt;      &lt;path id=&quot;gentle-wave&quot; d=&quot;M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 1...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/11/22/biancheng/aopapilog/" title="Spring Boot 自定义注解，AOP切面实现 API 请求日志记录"><img class="cover" src="https://pic1.imgdb.cn/item/6709ee2ed29ded1a8c613ee0.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-22</div><div class="info-item-2">Spring Boot 自定义注解，AOP切面实现 API 请求日志记录</div></div><div class="info-2"><div class="info-item-1">1.前言在后端业务中，对每次请求的入参、被请求类、方法，以及出参、执行耗时等信息进行日志打印，是很有必要的，有了这些信息，当某个接口出现问题时，可以帮助我们快速完成问题的追踪。那么，Spring Boot 中要如何实现呢? 相对于这种与主流程有一定的功能解耦的相对独立小功能可以使用springboot的切面来在关键地方织入我们的程序。 2.什么是自定义注解 (Custom Annotations)？Java 注解是从 Java 5 开始引入的，它为我们提供了一种元编程的方法，允许我们在不改变代码逻辑的情况下为代码添加元数据。这些元数据可以在编译时或运行时通过反射被访问。 自定义注解就是用户定义的，用于为代码提供元数据的注解。例如，本小节中自定义的 @ApiOperationLog 注解，它用来表示一个方法在执行时需要被记录日志。 3.什么是 AOP (面向切面编程)？AOP（Aspect-Oriented Programming，面向切面编程）是一个编程范式，它提供了一种能力，让开发者能够模块化跨多个对象的横切关注点（例如日志、事务管理、安全等）。 主要概念包括：  切点 (Po...</div></div></div></a><a class="pagination-related" href="/2025/11/22/biancheng/jwt/" title="Spring Security 整合 JWT ：实现身份认证"><img class="cover" src="https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-22</div><div class="info-item-2">Spring Security 整合 JWT ：实现身份认证</div></div><div class="info-2"><div class="info-item-1">1. 什么是 JWT？JWT（JSON Web Token）是一种用于在不同应用之间安全传输信息的开放标准（RFC 7519）。它是一种基于 JSON 的轻量级令牌，由三部分组成：头部（Header）、载荷（Payload）和签名（Signature）。JWT 被广泛用于实现身份验证和授权，特别适用于前后端分离的应用程序。 令牌类似下面这一大长串： eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWFueGlhb2hhIiwiaXNzIjoicXVhbnhpYW9oYSIsImlhdCI6MTY5Mjk1OTY2MSwiZXhwIjoxNjkyOTYzMjYxfQ.wbqbn23C9vAe5sQZRCBzrIM4SiN1eNl55NIONmHoiPHPHSSu0QJGgPGUin80hA4XgMHEqN1Wm5KJlmKKucUyGQ  可以看到，由 header.payload.signature 三部分组成，你可以在此网站: https://jwt.io/ 上获得解析结果： 2. 为什么要使用 JWT？JWT 提供了一种在客户端和服务器之间传输安全信息的简...</div></div></div></a><a class="pagination-related" href="/2025/11/22/biancheng/jsr380/" title="Spring Boot 实现 JSR 380优雅的参数校验"><img class="cover" src="https://pic1.imgdb.cn/item/6709ee8dd29ded1a8c61897f.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-22</div><div class="info-item-2">Spring Boot 实现 JSR 380优雅的参数校验</div></div><div class="info-2"><div class="info-item-1">1. 介绍在业务开发中，我们需要对前端传入的各种参数做格式、长度、合规性校验，如果全部用if去判断写在业务代码里，观感非常的不好，也不够轻量。 2. JSR 380 参数校验注解Spring Boot 提供了简洁的方法，让我们能够利用 Java 校验 API (JSR 380) 中定义的注解进行参数校验。JSR 380，也被称为 Bean Validation 2.0，是 Java Bean 验证规范的一个版本。该规范定义了一系列注解，用于验证 Java Bean 对象的属性，确保它们满足某些条件或限制。 以下是 JSR 380 中提供的主要验证注解及其描述：  @NotNull: 验证对象值不应为 null。 @AssertTrue: 验证布尔值是否为 true。 @AssertFalse: 验证布尔值是否为 false。 @Min(value): 验证数字是否不小于指定的最小值。 @Max(value): 验证数字是否不大于指定的最大值。 @DecimalMin(value): 验证数字值（可以是浮点数）是否不小于指定的最小值。 @DecimalMax(value): 验证数...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">橙子</div><div class="author-info-description">总有人间一两风，填我十万八千梦</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/shanzhengfei"><i class="fab fa-github"></i><span>关注我</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">如人饮水，冷暖自知</div></div><div class="card-widget vps" id="vps"><div class="item-headline"><i class="fas fa-heartbeat"></i><span>VPS推荐</span></div><div class="item-content"><div class="textwidget custom-html-widget">
+  <div class="zib-widget">
+    <style>
+       .themeinfo {
+            overflow: hidden;
+        }
+
+       .themeinfo img {
+            display: block;
+            height: auto;
+            width: 100%;
+            border-radius: 3px 3px 0 0;
+            background-size: cover;
+            cursor: pointer; /* 添加鼠标指针样式为手型，表示可点击 */
+        }
+
+       .theme-info h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            padding: 5px 0 10px 0;
+        }
+
+       .theme-info ul {
+            margin-left: 10px;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+       .theme-info ul li {
+            font-size: 13px;
+            margin-bottom: 8px;
+            list-style: none;
+        }
+
+       .theme-info ul li i {
+            margin-right: 5px;
+        }
+
+       .themeinfo-content.sale {
+            margin: 0;
+            border-top: 1px solid #eee;
+            padding: 10px 5px;
+            margin: 0 15px;
+        }
+
+       .themeinfo-content.sale h2 {
+            margin: 0;
+            font-size: 14px;
+            color: #999;
+            line-height: 20px;
+        }
+
+       .themeinfo-content.sale small {
+            font-style: normal;
+            font-size: 12px;
+            position: relative;
+            margin-right: 4px;
+        }
+
+       .themeinfo-content.sale strong {
+            float: right;
+            line-height: 1;
+            font-weight: 200;
+        }
+
+       .themeinfo-content a {
+            color: #fff;
+            border-image: linear-gradient(rgb(0 6 143), rgb(242 66 250)) 1;
+            background-image: linear-gradient(135deg, #fd7a64 10%, #fb2d2d 100%);
+            border-radius: 5px;
+            display: block;
+            padding: 10px;
+            margin: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+       .themeinfo-content a:hover {
+            opacity: 0.8;
+        }
+    </style>
+    <div class="widget-content themeinfo">
+      <img
+        title="莱卡云"
+        src="https://pic.imgdb.cn/item/67484920d0e0a243d4da2186.webp"
+        onclick="window.location.href='https://www.lcayun.com/aff/RKXCDKBH'"
+      />
+      <div class="themeinfo-content">
+        <div class="theme-info">
+          <h2>本站同款服务器供应商</h2>
+        </div>
+        <a href="https://www.lcayun.com/aff/RKXCDKBH" target="_blank" rel="noopener">立即购买</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/btspringboot/" title="用宝塔轻松部署java springboot的前后端分离项目"><img src="https://pic1.imgdb.cn/item/6709edcdd29ded1a8c60f520.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用宝塔轻松部署java springboot的前后端分离项目"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/btspringboot/" title="用宝塔轻松部署java springboot的前后端分离项目">用宝塔轻松部署java springboot的前后端分离项目</a><time datetime="2025-11-22T08:16:30.834Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/chatgptcanvas/" title="用chatgpt为网站首页绘制一个canvas星空特效"><img src="https://pic1.imgdb.cn/item/6709eea7d29ded1a8c619ba7.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用chatgpt为网站首页绘制一个canvas星空特效"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/chatgptcanvas/" title="用chatgpt为网站首页绘制一个canvas星空特效">用chatgpt为网站首页绘制一个canvas星空特效</a><time datetime="2025-11-22T08:16:30.810Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/tailwindxiaomi/" title="使用 Tailwind CSS 引入小米字体 告别原生自带丑字体"><img src="https://pic1.imgdb.cn/item/6709ee46d29ded1a8c615205.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 Tailwind CSS 引入小米字体 告别原生自带丑字体"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/tailwindxiaomi/" title="使用 Tailwind CSS 引入小米字体 告别原生自带丑字体">使用 Tailwind CSS 引入小米字体 告别原生自带丑字体</a><time datetime="2025-11-22T08:16:30.802Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/animatecss/" title="简单易用的css动画库 Animate.css"><img src="https://pic1.imgdb.cn/item/6709eea4d29ded1a8c619976.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="简单易用的css动画库 Animate.css"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/animatecss/" title="简单易用的css动画库 Animate.css">简单易用的css动画库 Animate.css</a><time datetime="2025-11-22T08:16:30.787Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/22/biancheng/vueenter/" title="vue中回车或其他键盘按键的事件监听"><img src="https://pic1.imgdb.cn/item/6709eea9d29ded1a8c619de4.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="vue中回车或其他键盘按键的事件监听"/></a><div class="content"><a class="title" href="/2025/11/22/biancheng/vueenter/" title="vue中回车或其他键盘按键的事件监听">vue中回车或其他键盘按键的事件监听</a><time datetime="2025-11-22T08:16:30.773Z" title="发表于 2025-11-22 16:16:30">2025-11-22</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By 橙子</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3-b1"></script><script src="/js/main.js?v=5.5.3-b1"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liydZ9xfc09IfFkl',
+      clientSecret: 'aa33e40d37fc33e5d2775e3cf68d93b262cbaa69',
+      repo: 'shanzhengfei.github.io',
+      owner: 'shanzhengfei',
+      admin: ['shanzhengfei'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '7b4ca3ab7ce0c4f05755d86d0ca866a4'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-nest.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3-b1"></script></div></div></body></html>
